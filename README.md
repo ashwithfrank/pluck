@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/pluck-icon.png" width="96" alt="Pluck icon"></p>
+
 # Pluck
 
 A clean Android GUI for **yt-dlp**, built with Flutter + Kotlin. By AlphaOmega Studio.

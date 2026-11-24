@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/format.dart';
@@ -104,12 +105,14 @@ class AnalyzeNotifier extends Notifier<AsyncValue<MediaInfo?>> {
   }
 
   static String _friendly(Object e) {
-    final s = e.toString();
-    final line = s.split('\n').map((l) => l.trim()).lastWhere(
-          (l) => l.startsWith('ERROR') || l.contains('Unsupported URL'),
-          orElse: () => s.split('\n').first,
-        );
-    return line.replaceFirst(RegExp(r'^.*ERROR:\s*'), '').replaceFirst('ENGINE', '').trim();
+    final s = e is PlatformException ? (e.message ?? e.toString()) : e.toString();
+    final lines = s.split('\n').map((l) => l.trim()).where((l) => l.isNotEmpty).toList();
+    if (lines.isEmpty) return 'Unknown error';
+    final line = lines.lastWhere(
+      (l) => l.startsWith('ERROR') || l.contains('Unsupported URL'),
+      orElse: () => lines.first,
+    );
+    return line.replaceFirst(RegExp(r'^.*ERROR:\s*'), '').trim();
   }
 }
 

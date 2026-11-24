@@ -114,7 +114,16 @@ class MainActivity : FlutterActivity() {
                 val value = block()
                 ui.post { result.success(value) }
             } catch (t: Throwable) {
-                ui.post { result.error("ENGINE", t.message ?: t.toString(), null) }
+                android.util.Log.e("Pluck", "engine call failed", t)
+                val detail = buildString {
+                    append(t.javaClass.simpleName)
+                    t.message?.takeIf { it.isNotBlank() }?.let { append(": ").append(it) }
+                    t.cause?.let { c ->
+                        append(" | cause: ").append(c.javaClass.simpleName)
+                        c.message?.takeIf { it.isNotBlank() }?.let { append(": ").append(it) }
+                    }
+                }
+                ui.post { result.error("ENGINE", detail, null) }
             }
         }
     }
